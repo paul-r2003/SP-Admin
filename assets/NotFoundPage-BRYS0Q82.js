@@ -1,0 +1,1 @@
+import{r as e,t}from"./react-DDyQi8KM.js";import{N as n,g as r,h as i}from"./index-C7WgI4EJ.js";var a=t();function o(){return(0,a.jsx)(r,{children:(0,a.jsx)(i,{title:`Page not found`,message:`The page you’re looking for doesn’t exist.`,action:(0,a.jsx)(e,{to:`/`,children:(0,a.jsx)(n,{children:`Back to dashboard`})})})})}export{o as NotFoundPage};
