@@ -1,0 +1,37 @@
+name: Slack cleaning alert
+
+# Every 15 minutes, Mon–Fri, 04:00–18:45 UTC (06:00–20:45 Stockholm in summer, 05:00–19:45 in winter).
+# The job itself decides whether it's time to post, using the alert time and time zone set in SP Admin → Settings,
+# and never posts the same day twice. GitHub may start scheduled runs a few minutes late.
+on:
+  schedule:
+    - cron: '*/15 4-18 * * 1-5'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never run two at once (the job also guards against duplicates in Firestore).
+concurrency:
+  group: slack-cleaning-alert
+  cancel-in-progress: false
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    defaults:
+      run:
+        working-directory: slack-alerts
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: slack-alerts
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install --omit=dev --no-audit --no-fund
+      - run: node send-cleaning-alert.mjs
+        env:
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
